@@ -2099,7 +2099,22 @@ function formatWeekDisplay(dateKey=''){
   const jan1=new Date(d.getFullYear(),0,1);
   const dayMs=24*3600*1000;
   const weekNo=Math.ceil((((d-jan1)/dayMs)+jan1.getDay()+1)/7);
-  return `${d.getFullYear()}-${String(weekNo).padStart(2,'0')}周`;
+  return `${d.getFullYear()}-${weekNo}周`;
+}
+function getWeekRangeDisplayByMondayKey(dateKey=''){
+  const d=parseDateKey(dateKey);
+  if(!d) return '';
+  const monday=addDays(d,-((d.getDay()+6)%7));
+  const sunday=addDays(monday,6);
+  return `${toDateKey(monday)}-${toDateKey(sunday)}`;
+}
+function formatTrendDateLabel(dateKey=''){
+  if(dateState?.grain==='按周' && /^\d{4}-\d{2}-\d{2}$/.test(String(dateKey||''))) return formatWeekDisplay(dateKey);
+  if(dateState?.grain==='按年'){
+    const y=/^(\d{4})/.exec(String(dateKey||''));
+    return y?y[1]:String(dateKey||'');
+  }
+  return String(dateKey||'');
 }
 function renderDateState(){
   const yearMode = dateState.grain==='按年';
@@ -2709,6 +2724,8 @@ function renderTrendDetailTable(){
   // 按月+对比期时，明细表格按从第一个月到最后一个月展示，并与对比期同向一一对应
   const sortedDates = (dateState.grain==='按月' && dateState.hasCompare) ? [...sortedDatesRaw].reverse() : sortedDatesRaw;
   const compareDates = dateState.hasCompare ? getCompareDatesByCurrent(sortedDates) : [];
+  const sortedDateLabels = sortedDates.map(d=>formatTrendDateLabel(d));
+  const compareDateLabels = compareDates.map(d=>formatTrendDateLabel(d));
 
   const ratioTemplate=(n)=> n===2?[65,35]:n===3?[50,30,20]:[100];
   const fmtVal=(v,isRatio,label='')=>{
@@ -2779,11 +2796,11 @@ function renderTrendDetailTable(){
     let headTop='';
     let headSub='';
     if(dateState.hasCompare){
-      headTop = `<tr><th class="left-col" rowspan="2">指标名称</th>${sortedDates.map((d,idx)=>`<th colspan="4">${d} VS ${compareDates[idx]||'-'}</th>`).join('')}</tr>`;
-      headSub = `<tr>${sortedDates.map(()=>`<th>本期</th><th>对比期</th><th>本期-对比期</th><th>变动幅度</th>`).join('')}</tr>`;
+      headTop = `<tr><th class="left-col" rowspan="2">指标名称</th>${sortedDateLabels.map((d,idx)=>`<th colspan="4">${d} VS ${compareDateLabels[idx]||'-'}</th>`).join('')}</tr>`;
+      headSub = `<tr>${sortedDateLabels.map(()=>`<th>本期</th><th>对比期</th><th>本期-对比期</th><th>变动幅度</th>`).join('')}</tr>`;
     }else{
-      headTop = `<tr><th class="left-col" rowspan="2">指标名称</th>${sortedDates.map(d=>`<th colspan="2">${d}</th>`).join('')}</tr>`;
-      headSub = `<tr>${sortedDates.map(()=>`<th>本期</th><th>${yoyLabel}</th>`).join('')}</tr>`;
+      headTop = `<tr><th class="left-col" rowspan="2">指标名称</th>${sortedDateLabels.map(d=>`<th colspan="2">${d}</th>`).join('')}</tr>`;
+      headSub = `<tr>${sortedDateLabels.map(()=>`<th>本期</th><th>${yoyLabel}</th>`).join('')}</tr>`;
     }
 
     const bodyRows = rows.map((r,ri)=>{
@@ -2810,6 +2827,8 @@ function renderTrendDetailTable(){
   const end=Math.min(totalDates,start+TREND_TABLE_PAGE_SIZE);
   const pageDates=sortedDates.slice(start,end);
   const pageCompareDates=compareDates.slice(start,end);
+  const pageDateLabels=sortedDateLabels.slice(start,end);
+  const pageCompareDateLabels=compareDateLabels.slice(start,end);
 
   const headTop = dateState.hasCompare
     ? `<tr><th class="left-col" rowspan="2">日期</th>${rows.map(r=>`<th colspan="4">${r.label}</th>`).join('')}</tr>`
@@ -2827,7 +2846,7 @@ function renderTrendDetailTable(){
       }
       return `<td>${fmtVal(v.now,v.isRatio,r.label)}</td><td>${v.yoy.toFixed(2)}%</td>`;
     }).join('');
-    const dateCell = dateState.hasCompare ? `${d} VS ${pageCompareDates[localIdx]||'-'}` : d;
+    const dateCell = dateState.hasCompare ? `${pageDateLabels[localIdx]||formatTrendDateLabel(d)} VS ${pageCompareDateLabels[localIdx]||formatTrendDateLabel(pageCompareDates[localIdx]||'-')}` : (pageDateLabels[localIdx]||formatTrendDateLabel(d));
     return `<tr><td class="left-col">${dateCell}</td>${tds}</tr>`;
   }).join('');
 
@@ -3054,13 +3073,7 @@ function refreshTrendChartByQuery(){
     ? `<div style="position:absolute;left:6px;top:42px;font-size:10px;color:${ratioAxisColor};line-height:62px;">100%<br>75%<br>50%<br>25%<br>0%</div>`
     : `<div style="position:absolute;left:6px;top:42px;font-size:10px;color:${valueAxisColor};line-height:62px;">${formatAxisNum(baseLeftMax)}<br>${formatAxisNum(baseLeftMax*0.75)}<br>${formatAxisNum(baseLeftMax*0.5)}<br>${formatAxisNum(baseLeftMax*0.25)}<br>0</div>`;
   const axisRight = needRightAxis ? `<div style="position:absolute;right:6px;top:42px;font-size:10px;color:${ratioAxisColor};line-height:62px;text-align:right;">${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax):(rightRatioNoPct?Number(rightRatioMax).toFixed(2):'100%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.75):(rightRatioNoPct?Number(rightRatioMax*0.75).toFixed(2):'75%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.5):(rightRatioNoPct?Number(rightRatioMax*0.5).toFixed(2):'50%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.25):(rightRatioNoPct?Number(rightRatioMax*0.25).toFixed(2):'25%')}<br>0</div>` : '';
-  const displayTrendDate=(x='')=>{
-    if(dateState.grain==='按年'){
-      const y=/^(\d{4})/.exec(String(x||''));
-      return y?y[1]:String(x||'');
-    }
-    return String(x||'');
-  };
+  const displayTrendDate=(x='')=>formatTrendDateLabel(x);
   const xTicks = labels.map((x,i)=>`<text x="${xStart+i*xStep}" y="378" font-size="10" fill="#86909C" text-anchor="end" transform="rotate(-42 ${xStart+i*xStep} 378)">${displayTrendDate(x)}</text>`).join('');
   const xTicksTop = dateState.hasCompare
     ? compareLabels.map((x,i)=>`<text x="${xStart+i*xStep}" y="34" font-size="10" fill="#8b9bb4" text-anchor="end" transform="rotate(-42 ${xStart+i*xStep} 34)">${displayTrendDate(x)}</text>`).join('')
@@ -3334,7 +3347,11 @@ function refreshTrendChartByQuery(){
     },{idx:0,d:Infinity}).idx;
     tip.style.display='block';
     setHoverTipPos(e);
-    const title = dateState.hasCompare ? `${labels[i]} VS ${compareLabels[i]||'-'}` : labels[i];
+    const curLabel = formatTrendDateLabel(labels[i]);
+    const cmpLabel = formatTrendDateLabel(compareLabels[i]||'-');
+    const curWeekRange = (dateState.grain==='按周') ? `（${getWeekRangeDisplayByMondayKey(labels[i])}）` : '';
+    const cmpWeekRange = (dateState.grain==='按周' && dateState.hasCompare) ? `（${getWeekRangeDisplayByMondayKey(compareLabels[i]||'')}）` : '';
+    const title = dateState.hasCompare ? `${curLabel}${curWeekRange} VS ${cmpLabel}${cmpWeekRange}` : `${curLabel}${curWeekRange}`;
 
     if(dateState.hasCompare){
       const pickRows=[];
