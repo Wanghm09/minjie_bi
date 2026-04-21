@@ -1339,6 +1339,9 @@ const dataViewLabelSpan=trendStyleWrap ? [...trendStyleWrap.querySelectorAll('sp
 const trendDates=['2026-03-24','2026-03-26','2026-03-28','2026-03-30','2026-04-01','2026-04-03','2026-04-05','2026-04-07'];
 let trendDateOrder=[...trendDates].sort((a,b)=>a<b?1:-1);
 let trendDataCache=null;
+let trendDayWindowStart='';
+let trendDayWindowEnd='';
+let trendDayWindowKey='';
 const radioYes=document.getElementById('radioYes');
 const radioNo=document.getElementById('radioNo');
 const dimChips=[...document.querySelectorAll('.line2 .chip')];
@@ -2911,7 +2914,31 @@ function refreshSummaryByQuery(){
 function refreshTrendChartByQuery(){
   if(!trendChartBox) return;
 
-  const labels=[...getFilteredTrendDates()].reverse();
+  const fullLabels=[...getFilteredTrendDates()].reverse();
+  const needDayRange = dateState.grain==='按日' && fullLabels.length>60;
+  const currentRangeKey = `${dateState.current.start||''}|${dateState.current.end||''}`;
+  if(needDayRange){
+    if(trendDayWindowKey!==currentRangeKey){
+      trendDayWindowStart = fullLabels[0];
+      trendDayWindowEnd = fullLabels[fullLabels.length-1];
+      trendDayWindowKey = currentRangeKey;
+    }
+    if(!trendDayWindowStart || !fullLabels.includes(trendDayWindowStart)) trendDayWindowStart = fullLabels[0];
+    if(!trendDayWindowEnd || !fullLabels.includes(trendDayWindowEnd)) trendDayWindowEnd = fullLabels[fullLabels.length-1];
+  }else{
+    trendDayWindowStart='';
+    trendDayWindowEnd='';
+    trendDayWindowKey='';
+  }
+  let labels=[...fullLabels];
+  let dayRangeStartIdx=0;
+  let dayRangeEndIdx=Math.max(0,fullLabels.length-1);
+  if(needDayRange){
+    dayRangeStartIdx = Math.max(0, fullLabels.indexOf(trendDayWindowStart));
+    dayRangeEndIdx = Math.max(0, fullLabels.indexOf(trendDayWindowEnd));
+    if(dayRangeEndIdx<dayRangeStartIdx){ const t=dayRangeStartIdx; dayRangeStartIdx=dayRangeEndIdx; dayRangeEndIdx=t; }
+    labels = fullLabels.slice(dayRangeStartIdx, dayRangeEndIdx+1);
+  }
   const compareLabels = dateState.hasCompare ? getCompareDatesByCurrent(labels) : [];
   const n=Math.max(2,labels.length);
   const svgW=1120, svgH=430;
@@ -3017,6 +3044,7 @@ function refreshTrendChartByQuery(){
       : makeCompareSeries(lineRatioSeries,true))
     : [];
 
+
   trendDataCache = {
     labels:[...labels],
     hasCompare:!!dateState.hasCompare,
@@ -3074,7 +3102,11 @@ function refreshTrendChartByQuery(){
     : `<div style="position:absolute;left:6px;top:42px;font-size:10px;color:${valueAxisColor};line-height:62px;">${formatAxisNum(baseLeftMax)}<br>${formatAxisNum(baseLeftMax*0.75)}<br>${formatAxisNum(baseLeftMax*0.5)}<br>${formatAxisNum(baseLeftMax*0.25)}<br>0</div>`;
   const axisRight = needRightAxis ? `<div style="position:absolute;right:6px;top:42px;font-size:10px;color:${ratioAxisColor};line-height:62px;text-align:right;">${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax):(rightRatioNoPct?Number(rightRatioMax).toFixed(2):'100%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.75):(rightRatioNoPct?Number(rightRatioMax*0.75).toFixed(2):'75%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.5):(rightRatioNoPct?Number(rightRatioMax*0.5).toFixed(2):'50%')}<br>${nonComposeDifferentUnitsDualAxis?Math.round(rightValueMax*0.25):(rightRatioNoPct?Number(rightRatioMax*0.25).toFixed(2):'25%')}<br>0</div>` : '';
   const displayTrendDate=(x='')=>formatTrendDateLabel(x);
-  const xTicks = labels.map((x,i)=>`<text x="${xStart+i*xStep}" y="378" font-size="10" fill="#86909C" text-anchor="end" transform="rotate(-42 ${xStart+i*xStep} 378)">${displayTrendDate(x)}</text>`).join('');
+  const xLabelStep = dateState.grain==='按日' ? Math.max(1, Math.ceil(labels.length/60)) : 1;
+  const xTicks = labels.map((x,i)=>{
+    const showLabel = dateState.grain==='按日' ? (i===0 || i===labels.length-1 || i%xLabelStep===0) : true;
+    return `<text x="${xStart+i*xStep}" y="378" font-size="10" fill="#86909C" text-anchor="end" transform="rotate(-42 ${xStart+i*xStep} 378)">${showLabel?displayTrendDate(x):''}</text>`;
+  }).join('');
   const xTicksTop = dateState.hasCompare
     ? compareLabels.map((x,i)=>`<text x="${xStart+i*xStep}" y="34" font-size="10" fill="#8b9bb4" text-anchor="end" transform="rotate(-42 ${xStart+i*xStep} 34)">${displayTrendDate(x)}</text>`).join('')
     : '';
@@ -3265,7 +3297,19 @@ function refreshTrendChartByQuery(){
     const muted = legendHidden.has(pure);
     return `<span class="lg-it" data-legend-name="${pure}" style="display:inline-flex;align-items:center;white-space:nowrap;margin-right:14px;cursor:pointer;opacity:${muted?0.38:1};">${x}</span>`;
   }).join('');
-  trendChartBox.innerHTML = `<div class="legend" style="${legendStyle}">${legendHtml}</div>${axisLeft}${axisRight}<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="100%" style="margin-top:${legendOffset}px;">${xTicksTop}${xAxisLine}${yAxisLeftLine}${yAxisRightLine}${plotSvg}${xTicks}</svg><div id="hoverTip" style="position:absolute;display:none;left:0;top:0;background:#fff;border:1px solid #dfe7f6;border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 16px rgba(0,0,0,.12);pointer-events:none;"></div>`;
+  const dayRangeCtrlHtml = (needDayRange && fullLabels.length>60)
+    ? `<div id="trendDayRangeCtrl" style="margin:8px 8px 0;padding:8px 10px;border:1px solid #e6edf9;border-radius:8px;background:#f8fbff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#5b6f90;margin-bottom:6px;">
+          <span>日期轴（可拖拽）</span>
+          <span id="trendDayRangeText">${trendDayWindowStart} 至 ${trendDayWindowEnd}</span>
+        </div>
+        <div style="position:relative;height:28px;">
+          <input id="trendDayRangeStart" type="range" min="0" max="${fullLabels.length-1}" value="${dayRangeStartIdx}" style="position:absolute;left:0;right:0;top:0;width:100%;pointer-events:auto;" />
+          <input id="trendDayRangeEnd" type="range" min="0" max="${fullLabels.length-1}" value="${dayRangeEndIdx}" style="position:absolute;left:0;right:0;top:0;width:100%;pointer-events:auto;" />
+        </div>
+      </div>`
+    : '';
+  trendChartBox.innerHTML = `<div class="legend" style="${legendStyle}">${legendHtml}</div>${axisLeft}${axisRight}<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="100%" style="margin-top:${legendOffset}px;">${xTicksTop}${xAxisLine}${yAxisLeftLine}${yAxisRightLine}${plotSvg}${xTicks}</svg>${dayRangeCtrlHtml}<div id="hoverTip" style="position:absolute;display:none;left:0;top:0;background:#fff;border:1px solid #dfe7f6;border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 16px rgba(0,0,0,.12);pointer-events:none;"></div>`;
   trendChartBox.querySelectorAll('.lg-it').forEach(el=>{
     el.addEventListener('click',()=>{
       const key=(el.getAttribute('data-legend-name')||'').trim();
@@ -3275,6 +3319,29 @@ function refreshTrendChartByQuery(){
       refreshTrendChartByQuery();
     });
   });
+
+  if(needDayRange && fullLabels.length>60){
+    const startEl=trendChartBox.querySelector('#trendDayRangeStart');
+    const endEl=trendChartBox.querySelector('#trendDayRangeEnd');
+    const txtEl=trendChartBox.querySelector('#trendDayRangeText');
+    const syncRange=()=>{
+      if(!startEl || !endEl) return;
+      let s=Number(startEl.value||0), e=Number(endEl.value||0);
+      if(s>e){
+        if(document.activeElement===startEl) e=s; else s=e;
+      }
+      startEl.value=String(s);
+      endEl.value=String(e);
+      trendDayWindowStart = fullLabels[s]||fullLabels[0];
+      trendDayWindowEnd = fullLabels[e]||fullLabels[fullLabels.length-1];
+      if(txtEl) txtEl.textContent = `${trendDayWindowStart} 至 ${trendDayWindowEnd}`;
+    };
+    const applyRange=()=>{ syncRange(); refreshTrendChartByQuery(); };
+    startEl?.addEventListener('input',syncRange);
+    endEl?.addEventListener('input',syncRange);
+    startEl?.addEventListener('change',applyRange);
+    endEl?.addEventListener('change',applyRange);
+  }
 
   const hoverSeries = (()=>{
     if(nonComposeMixedDualAxis) return [
@@ -12745,7 +12812,7 @@ function getFilteredTrendDates(){
       if(startD && endD){
         let cur=new Date(startD);
         let guard=0;
-        while(cur<=endD && guard<120){ arr.push(toDateKey(cur)); cur=addDays(cur,1); guard++; }
+        while(cur<=endD && guard<1200){ arr.push(toDateKey(cur)); cur=addDays(cur,1); guard++; }
         return arr.reverse();
       }
     }
