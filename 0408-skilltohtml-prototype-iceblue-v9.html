@@ -2376,7 +2376,10 @@ function renderDayRangePop(target='current',mode='day'){
   pop.querySelectorAll('[data-nav]').forEach(btn=>{
     btn.style.cursor='pointer';
     btn.style.pointerEvents='auto';
-    btn.addEventListener('click',()=>{
+    btn.addEventListener('mousedown',(e)=>{ e.preventDefault(); });
+    btn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      e.stopPropagation();
       const v=btn.dataset.nav;
       if(v==='yy-') dayPickerState.leftYear--;
       if(v==='yy+') dayPickerState.leftYear++;
