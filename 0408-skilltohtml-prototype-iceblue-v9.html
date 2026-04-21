@@ -3291,7 +3291,8 @@ function refreshTrendChartByQuery(){
   const legendNeedWrap = legendParts.length>8 || (composeOn && dataViewMode==='all');
   const legendLineCount = legendNeedWrap ? Math.max(2, Math.ceil(legendParts.length/6)) : 1;
   const legendOffset = Math.max(0, (legendLineCount-1) * 22);
-  trendChartBox.style.height = `${460 + legendOffset}px`;
+  const dayAxisExtraHeight = (needDayRange && fullLabels.length>60) ? 86 : 0;
+  trendChartBox.style.height = `${460 + legendOffset + dayAxisExtraHeight}px`;
   const legendStyle = legendNeedWrap
     ? 'display:flex;flex-wrap:wrap;max-width:92%;row-gap:6px;line-height:16px;justify-content:center;'
     : '';
@@ -3301,18 +3302,19 @@ function refreshTrendChartByQuery(){
     return `<span class="lg-it" data-legend-name="${pure}" style="display:inline-flex;align-items:center;white-space:nowrap;margin-right:14px;cursor:pointer;opacity:${muted?0.38:1};">${x}</span>`;
   }).join('');
   const dayRangeCtrlHtml = (needDayRange && fullLabels.length>60)
-    ? `<div id="trendDayRangeCtrl" style="margin:8px 8px 0;padding:8px 10px;border:1px solid #e6edf9;border-radius:8px;background:#f8fbff;">
+    ? `<div id="trendDayRangeCtrl" style="margin:18px 8px 0;padding:8px 10px;border:1px solid #e6edf9;border-radius:8px;background:#f8fbff;position:relative;z-index:2;">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#5b6f90;margin-bottom:6px;">
           <span>日期轴（可拖拽）</span>
           <span id="trendDayRangeText">${trendDayWindowStart} 至 ${trendDayWindowEnd}</span>
         </div>
-        <div style="position:relative;height:28px;">
+        <div style="position:relative;height:30px;">
           <input id="trendDayRangeStart" type="range" min="0" max="${fullLabels.length-1}" value="${dayRangeStartIdx}" style="position:absolute;left:0;right:0;top:0;width:100%;pointer-events:auto;" />
           <input id="trendDayRangeEnd" type="range" min="0" max="${fullLabels.length-1}" value="${dayRangeEndIdx}" style="position:absolute;left:0;right:0;top:0;width:100%;pointer-events:auto;" />
         </div>
       </div>`
     : '';
   trendChartBox.innerHTML = `<div class="legend" style="${legendStyle}">${legendHtml}</div>${axisLeft}${axisRight}<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="100%" style="margin-top:${legendOffset}px;">${xTicksTop}${xAxisLine}${yAxisLeftLine}${yAxisRightLine}${plotSvg}${xTicks}</svg>${dayRangeCtrlHtml}<div id="hoverTip" style="position:absolute;display:none;left:0;top:0;background:#fff;border:1px solid #dfe7f6;border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 16px rgba(0,0,0,.12);pointer-events:none;"></div>`;
+  if(sumWrap) sumWrap.style.marginTop = (needDayRange && fullLabels.length>60) ? '14px' : '0px';
   trendChartBox.querySelectorAll('.lg-it').forEach(el=>{
     el.addEventListener('click',()=>{
       const key=(el.getAttribute('data-legend-name')||'').trim();
