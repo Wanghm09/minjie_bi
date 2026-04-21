@@ -322,6 +322,19 @@
     .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
     .btnm{height:26px;padding:0 10px;border:1px solid var(--border);background:#fff;border-radius:4px;cursor:pointer;text-align:center;font-size:14px;line-height:26px;min-width:80px}
     .primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+    .feedback-modal{width:560px;max-width:92vw;padding:16px}
+    .feedback-field{margin-top:10px}
+    .feedback-label{font-size:13px;font-weight:600;color:#3d5270;margin-bottom:6px;display:block}
+    .feedback-select,.feedback-textarea{width:100%;border:1px solid #dfe7f6;border-radius:8px;background:#fff;color:#334155}
+    .feedback-select{height:34px;padding:0 10px}
+    .feedback-textarea{min-height:110px;padding:10px;resize:vertical;line-height:20px;font-size:13px}
+    .feedback-upload{border:1px dashed #c8dafb;border-radius:10px;background:#f8fbff;padding:10px}
+    .feedback-upload-btn{height:32px;padding:0 12px;border:1px solid #bfd2fa;background:#fff;border-radius:8px;color:#275fb8;cursor:pointer}
+    .feedback-tip{font-size:12px;color:#7b8aa6;margin-left:8px}
+    .feedback-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}
+    .feedback-item{position:relative;height:76px;border:1px solid #dfe7f6;border-radius:8px;overflow:hidden;background:#fff}
+    .feedback-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .feedback-remove{position:absolute;right:4px;top:4px;width:18px;height:18px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;line-height:18px;font-size:12px;padding:0}
 
     .fixed-tools{position:fixed;right:2px;left:auto;top:calc(50% + 120px);transform:translateY(-50%);z-index:999;display:flex;flex-direction:column;gap:12px;align-items:center}
     .fixed-tools .it{width:56px;height:56px;min-width:56px;min-height:56px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;color:#2f66c7;font-size:14px;line-height:18px;cursor:pointer;transition:var(--transition);padding:0;border:1px solid rgba(87,137,233,.18);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.94) 0%,rgba(240,247,255,.95) 100%);box-shadow:0 6px 16px rgba(36,88,179,.10), inset 0 1px 0 rgba(255,255,255,.75);text-align:center}
@@ -1187,6 +1200,39 @@
 
 <div class="grain-mask" id="grainMask"><div class="grain-modal"><div class="grain-title"><span class="grain-title-text">查询粒度选择</span><span class="grain-title-tip" id="grainTitleTip"></span></div><div class="grain-grid" id="grainGrid"></div><div class="grain-ft"><button class="picker-cancel" id="grainCancel">取消</button><button class="picker-ok" id="grainOk">确认</button></div></div></div>
 
+<div class="modal-mask" id="feedbackMask">
+  <div class="modal feedback-modal">
+    <h4 style="margin:0 0 4px;">意见反馈</h4>
+    <div class="feedback-field">
+      <label class="feedback-label" for="feedbackType">问题类型</label>
+      <select id="feedbackType" class="feedback-select">
+        <option value="">请选择问题类型</option>
+        <option>功能异常</option>
+        <option>数据问题</option>
+        <option>交互体验</option>
+        <option>其他建议</option>
+      </select>
+    </div>
+    <div class="feedback-field">
+      <label class="feedback-label" for="feedbackText">问题描述</label>
+      <textarea id="feedbackText" class="feedback-textarea" placeholder="请详细描述你遇到的问题或建议"></textarea>
+    </div>
+    <div class="feedback-field">
+      <label class="feedback-label">图片上传</label>
+      <div class="feedback-upload">
+        <button type="button" class="feedback-upload-btn" id="feedbackUploadBtn">点击上传图片</button>
+        <span class="feedback-tip">最多支持上传5张图片</span>
+        <input id="feedbackImageInput" type="file" accept="image/*" multiple style="display:none;" />
+        <div id="feedbackPreview" class="feedback-preview"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btnm" id="feedbackCancel">取消</button>
+      <button class="btnm primary" id="feedbackConfirm">确认</button>
+    </div>
+  </div>
+</div>
+
 <div class="fixed-tools">
   <div class="it"><div class="label">查询
 指标</div></div>
@@ -1349,6 +1395,34 @@ function showTopNotice(msg='请选择同一类指标进行统计分析'){
     el.style.display='none';
   },{once:true});
 }
+function renderFeedbackPreview(){
+  if(!feedbackPreview) return;
+  feedbackPreview.innerHTML = feedbackImages.map((u,idx)=>`<div class="feedback-item"><img src="${u}" alt="上传图片${idx+1}" /><button class="feedback-remove" data-idx="${idx}" title="移除">×</button></div>`).join('');
+  feedbackPreview.querySelectorAll('.feedback-remove').forEach(btn=>btn.addEventListener('click',()=>{
+    const i=Number(btn.dataset.idx);
+    const removed = feedbackImages.splice(i,1);
+    if(removed?.[0]) URL.revokeObjectURL(removed[0]);
+    renderFeedbackPreview();
+  }));
+}
+function resetFeedbackModal(){
+  feedbackType && (feedbackType.value='');
+  feedbackText && (feedbackText.value='');
+  (feedbackImages||[]).forEach(u=>URL.revokeObjectURL(u));
+  feedbackImages=[];
+  renderFeedbackPreview();
+  if(feedbackImageInput) feedbackImageInput.value='';
+}
+function openFeedbackModal(){
+  if(!feedbackMask) return;
+  feedbackMask.style.display='flex';
+}
+function closeFeedbackModal(){
+  if(!feedbackMask) return;
+  feedbackMask.style.display='none';
+  resetFeedbackModal();
+}
+
 function flyToSelected(targetEl,text='已添加'){
   if(!targetEl) return;
   const from=targetEl.getBoundingClientRect();
@@ -1770,6 +1844,19 @@ const addPendingQueryTool=[...document.querySelectorAll('.fixed-tools .it')].fin
   const t=(el.textContent||'').replace(/\s+/g,'');
   return t.includes('添加待查') || t.includes('添加指标');
 })||null;
+const feedbackTool=[...document.querySelectorAll('.fixed-tools .it')].find(el=>{
+  const t=(el.textContent||'').replace(/\s+/g,'');
+  return t.includes('反馈');
+})||null;
+const feedbackMask=document.getElementById('feedbackMask');
+const feedbackType=document.getElementById('feedbackType');
+const feedbackText=document.getElementById('feedbackText');
+const feedbackUploadBtn=document.getElementById('feedbackUploadBtn');
+const feedbackImageInput=document.getElementById('feedbackImageInput');
+const feedbackPreview=document.getElementById('feedbackPreview');
+const feedbackCancel=document.getElementById('feedbackCancel');
+const feedbackConfirm=document.getElementById('feedbackConfirm');
+let feedbackImages=[];
 const clearSelectedBtn=document.getElementById('clearSelectedBtn');
 const querySelectedBtn=document.getElementById('querySelectedBtn');
 const selectedActions=document.getElementById('selectedActions');
@@ -12357,6 +12444,25 @@ moduleTabs.forEach(tab=>tab.addEventListener('click',()=>{
   syncModuleUI(key);
 }));
 syncModuleUI('bi');
+
+feedbackTool&&feedbackTool.addEventListener('click',()=>openFeedbackModal());
+feedbackUploadBtn&&feedbackUploadBtn.addEventListener('click',()=>feedbackImageInput&&feedbackImageInput.click());
+feedbackImageInput&&feedbackImageInput.addEventListener('change',()=>{
+  const files=[...(feedbackImageInput.files||[])];
+  if(!files.length) return;
+  const remain=Math.max(0,5-feedbackImages.length);
+  if(remain<=0){showToast('最多支持上传5张图片'); feedbackImageInput.value=''; return;}
+  files.slice(0,remain).forEach(f=>feedbackImages.push(URL.createObjectURL(f)));
+  if(files.length>remain) showToast('最多支持上传5张图片');
+  renderFeedbackPreview();
+  feedbackImageInput.value='';
+});
+feedbackCancel&&feedbackCancel.addEventListener('click',()=>closeFeedbackModal());
+feedbackConfirm&&feedbackConfirm.addEventListener('click',()=>{
+  closeFeedbackModal();
+  showToast('反馈已提交');
+});
+feedbackMask&&feedbackMask.addEventListener('click',(e)=>{ if(e.target===feedbackMask) closeFeedbackModal(); });
 
 const dataNavItems=[...document.querySelectorAll('.data-nav-item')];
 const dataPanes={
