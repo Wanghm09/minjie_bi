@@ -1,0 +1,9 @@
+[AI agent] 此命令最长阻塞约 10 分钟，等待用户在浏览器内完成授权。请确保 runner 的 timeout >= 600s；如不支持长 timeout，请改用 `lark-cli auth login --no-wait --json` 拿到 device_code 后再用 `lark-cli auth login --device-code <code>` 续上轮询。**不要短 timeout 反复重试**，每次重启会作废上一轮的 device code，导致用户授权链接失效。向用户展示授权链接时，必须逐字原样转发 CLI 返回的 URL，把它视为不可修改的 opaque string；不要做 URL 编码或解码，不要补 `%20`、空格或标点，不要改写成 Markdown 链接，建议用只包含该 URL 的代码块单独输出。
+等待用户授权...
+{
+  "ok": false,
+  "error": {
+    "type": "auth",
+    "message": "authorization failed: Authorization timed out, please try again"
+  }
+}
