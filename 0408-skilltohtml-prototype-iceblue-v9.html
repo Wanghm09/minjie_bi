@@ -828,6 +828,8 @@
     #metricPanel #deliveryConvertMetricRow .v,
     #metricPanel #hrSalaryMetricRow .v,
     #metricPanel #reserveOrderMetricRow .v{border-bottom:none;padding-bottom:0}
+    #metricPanel #deliveryConvertMetricRow.metric-group-tail{border-bottom:none}
+    #metricPanel #deliveryConvertMetricRow.metric-group-tail .v{border-bottom:1px solid rgba(176,202,241,.42);padding-bottom:12px}
     #dimensionPanel .r,#metricPanel .r{border-bottom:none}
     #dimensionPanel .r:last-child,#metricPanel .r:last-child{border-bottom:none}
     #dimensionPanel .r.dimension-group-tail,
@@ -1647,6 +1649,7 @@
         <button class="metric-side-nav-item" type="button" data-metric-nav="会员"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">会员</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="菜品"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">菜品</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="供应链"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">供应链</span></button>
+        <button class="metric-side-nav-item" type="button" data-metric-nav="外送"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">外送</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="人事"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">人事</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="排号订餐"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">排号订餐</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="财务"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">财务</span></button>
@@ -15978,6 +15981,7 @@ const metricCategoryMap = {
   '会员':['会员_拉新','会员_消费','会员_复购'],
   '菜品':['菜品_销量','菜品_转化','菜品_赠免','菜品_复购'],
   '供应链':['供应链_采购','供应链_收货','供应链_物流'],
+  '外送':['外送_订单','外送_折算'],
   '人事':['人事_人效','人事_留任','人事_薪酬'],
   '排号订餐':['排号_订餐'],
   '财务':['财务_收支','财务_利润','财务_现金']
