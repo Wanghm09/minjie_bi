@@ -777,7 +777,8 @@
     #metricPanel.expanded{height:auto;min-height:520px}
     #metricPanel.expanded .rows{overflow:visible;flex:unset;max-height:none;padding-right:0;padding-bottom:0}
     #dimensionPanel.expanded .dimension-side-nav,
-    #metricPanel.expanded .metric-side-nav{align-self:start;position:sticky;top:78px;height:max-content;max-height:calc(100vh - 110px);overflow:visible;justify-content:flex-start;gap:8px}
+    #metricPanel.expanded .metric-side-nav{align-self:start;position:fixed;left:var(--quick-nav-left,12px);top:var(--quick-nav-top,220px);width:var(--quick-nav-width,88px);height:max-content;max-height:calc(100vh - var(--quick-nav-top,220px) - 24px);overflow:visible;justify-content:flex-start;gap:8px;z-index:60}
+    #metricPanel.expanded .metric-side-nav{transform:none}
     #dimensionPanel .rows,
     #metricPanel .rows{padding-right:6px}
     #dimensionPanel .rows::-webkit-scrollbar,
@@ -15795,7 +15796,29 @@ function syncExpandBtnCenter(){
   if(panelHeightDrag) panelHeightDrag.style.left = `${centerX}px`;
 }
 
+function setQuickNavFixedVars(nav){
+  if(!nav) return;
+  const rect = nav.getBoundingClientRect();
+  nav.style.setProperty('--quick-nav-left', `${rect.left}px`);
+  nav.style.setProperty('--quick-nav-top', `${rect.top}px`);
+  nav.style.setProperty('--quick-nav-width', `${rect.width}px`);
+}
+function lockExpandedQuickNavs(){
+  setQuickNavFixedVars(dimensionSideNav);
+  setQuickNavFixedVars(metricSideNav);
+}
+function clearExpandedQuickNavs(){
+  [dimensionSideNav, metricSideNav].forEach(nav=>{
+    if(!nav) return;
+    nav.style.removeProperty('--quick-nav-left');
+    nav.style.removeProperty('--quick-nav-top');
+    nav.style.removeProperty('--quick-nav-width');
+  });
+}
+
 function setPanelsExpanded(expanded){
+  if(expanded) lockExpandedQuickNavs();
+  else clearExpandedQuickNavs();
   if(dimensionPanel) dimensionPanel.classList.toggle('expanded', !!expanded);
   if(metricPanel) metricPanel.classList.toggle('expanded', !!expanded);
   if(expanded){
