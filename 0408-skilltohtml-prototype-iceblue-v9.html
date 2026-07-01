@@ -857,27 +857,27 @@
 .dimension-side-nav,.metric-side-nav{grid-column:1;grid-row:2;align-self:stretch;position:relative;width:100%;z-index:10;margin-top:0;padding:4px 0 4px 10px;background:transparent;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
 .dimension-side-nav::before,.metric-side-nav::before{content:'';position:absolute;left:17px;top:13px;bottom:13px;width:2px;background:#c8ccd2;border-radius:2px}
 #metricPanel .metric-side-nav{transform:translateX(-33px);width:calc(100% + 33px);z-index:16}
-#metricPanel .metric-side-nav-item{grid-template-columns:18px max-content 7px 16px;gap:2px;width:max-content;max-width:100%}
+#metricPanel .metric-side-nav-item{grid-template-columns:18px max-content 7px;gap:2px;width:max-content;max-width:100%}
 #metricPanel .metric-side-nav-label{width:auto;min-width:0;max-width:2.2em}
 #metricPanel .metric-side-nav-item .side-nav-eye{width:16px;height:16px}
 #metricPanel .metric-side-nav-item .side-nav-eye svg{width:14px;height:14px}
-    .dimension-side-nav-item,.metric-side-nav-item{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr) 10px 18px;align-items:center;gap:4px;width:100%;min-height:38px;padding:0;border:none;background:transparent;color:#1D2129;font-size:13px;line-height:17px;text-align:left;cursor:pointer;letter-spacing:0;transition:color .18s ease}
+    .dimension-side-nav-item,.metric-side-nav-item{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr) 10px;align-items:center;gap:4px;width:100%;min-height:38px;padding:0;border:none;background:transparent;color:#1D2129;font-size:13px;line-height:17px;text-align:left;cursor:pointer;letter-spacing:0;transition:color .18s ease}
 .dimension-side-nav-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:#b9bec5;box-shadow:0 0 0 2px #fff;transition:background .18s ease,transform .18s ease}
 .metric-side-nav-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:#b9bec5;box-shadow:0 0 0 2px #fff;transition:background .18s ease,transform .18s ease}
 .dimension-side-nav-label,.metric-side-nav-label{display:block;width:2.2em;white-space:normal;word-break:break-all;line-height:16px}
 .side-nav-eye{position:relative;z-index:2;width:18px;height:18px;border:1px solid transparent;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#1D2129;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,opacity .18s ease}
-.dimension-side-nav-item .side-nav-eye,.metric-side-nav-item .side-nav-eye{grid-column:4;grid-row:1}
+.dimension-side-nav-item .side-nav-eye,.metric-side-nav-item .side-nav-eye{grid-column:1;grid-row:1;justify-self:center;align-self:center}
+.dimension-side-nav-item:has(.side-nav-eye) .dimension-side-nav-dot,.metric-side-nav-item:has(.side-nav-eye) .metric-side-nav-dot{display:none}
 .side-nav-eye svg{width:15px;height:15px;display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .side-nav-eye:hover{background:#eaf3ff;color:#0f66ff;border-color:#c7dcff}
 .side-nav-eye.is-hidden{color:#b1bdce;opacity:.82}
 .side-nav-eye svg .eye-slash{display:none}
 .side-nav-eye.is-hidden svg .eye-slash{display:block}
 .dimension-side-nav-item.category-hidden,.metric-side-nav-item.category-hidden{color:#95a2b7;font-weight:500}
-.dimension-side-nav-item.category-hidden .dimension-side-nav-dot,.metric-side-nav-item.category-hidden .metric-side-nav-dot{background:#d5dbe5}
+.dimension-side-nav-item.category-hidden .side-nav-eye,.metric-side-nav-item.category-hidden .side-nav-eye{color:#b1bdce}
 .dimension-side-nav-item:hover,.metric-side-nav-item:hover{color:#0f66ff}
-.dimension-side-nav-item:hover .dimension-side-nav-dot,.metric-side-nav-item:hover .metric-side-nav-dot{background:#5b9dff}
 .dimension-side-nav-item.active,.metric-side-nav-item.active{color:#0f66ff;font-weight:800}
-.dimension-side-nav-item.active .dimension-side-nav-dot,.metric-side-nav-item.active .metric-side-nav-dot{background:#1291e9;transform:scale(1.08)}
+.dimension-side-nav-item.active .side-nav-eye,.metric-side-nav-item.active .side-nav-eye{color:#0f66ff}
 .dimension-side-nav-item.active::after,.metric-side-nav-item.active::after{content:'>';grid-column:3;grid-row:1;justify-self:center;align-self:center;color:#0f66ff;font-weight:900}
 .popup-underline{text-decoration:underline;text-underline-offset:2px}
     .panel .rows .v span{cursor:pointer}
