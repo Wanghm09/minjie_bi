@@ -1581,9 +1581,9 @@
 
   <div class="panel-wrap">
     <div class="panel glass-card" id="dimensionPanel">
-      <div class="head-row"><h3>维度选择</h3><div class="search" id="dimensionSearchTrigger"><input id="dimensionSearchInput" type="text" placeholder="请搜索选择维度" /><span>⌄</span></div><span style="display:inline-flex;gap:10px;align-items:center;"><button class="dimension-show-all-btn" id="dimensionShowAllBtn" type="button">展示全部维度</button><a class="reset-link" id="dimensionRestoreLink">恢复默认设置</a></span></div>
+      <div class="head-row"><h3>维度选择</h3><div class="search" id="dimensionSearchTrigger"><input id="dimensionSearchInput" type="text" placeholder="请搜索并配置您关注的维度体系" /><span>⌄</span></div><span style="display:inline-flex;gap:10px;align-items:center;"><button class="dimension-show-all-btn" id="dimensionShowAllBtn" type="button">展示全部维度</button><a class="reset-link" id="dimensionRestoreLink">恢复默认设置</a></span></div>
       <div class="dimension-side-nav" id="dimensionSideNav" aria-label="维度分类快速定位">
-        <button class="dimension-side-nav-item active" type="button" data-dim-nav="地域门店"><span class="dimension-side-nav-dot"></span><span class="dimension-side-nav-label">地域门店</span></button>
+        <button class="dimension-side-nav-item active" type="button" data-dim-nav="区域门店"><span class="dimension-side-nav-dot"></span><span class="dimension-side-nav-label">区域门店</span></button>
         <button class="dimension-side-nav-item" type="button" data-dim-nav="时段日期"><span class="dimension-side-nav-dot"></span><span class="dimension-side-nav-label">时段日期</span></button>
         <button class="dimension-side-nav-item" type="button" data-dim-nav="账单消费"><span class="dimension-side-nav-dot"></span><span class="dimension-side-nav-label">账单消费</span></button>
         <button class="dimension-side-nav-item" type="button" data-dim-nav="排号订餐"><span class="dimension-side-nav-dot"></span><span class="dimension-side-nav-label">排号订餐</span></button>
@@ -1671,7 +1671,7 @@
     </div>
 
     <div class="panel panel-metric glass-card" id="metricPanel">
-      <div class="head-row"><h3>指标选择</h3><div class="search" id="metricSearchTrigger"><input id="metricSearchInput" type="text" placeholder="请搜索选择指标" /><span>⌄</span></div><span style="display:inline-flex;gap:10px;align-items:center;"><button class="dimension-show-all-btn" id="metricShowAllBtn" type="button">展示全部指标</button><a class="reset-link" id="metricRestoreLink">恢复默认设置</a><a class="reset-link" id="metricResetLink">重置已选项</a></span></div>
+      <div class="head-row"><h3>指标选择</h3><div class="search" id="metricSearchTrigger"><input id="metricSearchInput" type="text" placeholder="请搜索并配置您关注的指标体系" /><span>⌄</span></div><span style="display:inline-flex;gap:10px;align-items:center;"><button class="dimension-show-all-btn" id="metricShowAllBtn" type="button">展示全部指标</button><a class="reset-link" id="metricRestoreLink">恢复默认设置</a><a class="reset-link" id="metricResetLink">重置已选项</a></span></div>
       <div class="metric-side-nav" id="metricSideNav" aria-label="指标分类快速定位">
         <button class="metric-side-nav-item active" type="button" data-metric-nav="经营"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">经营</span></button>
         <button class="metric-side-nav-item" type="button" data-metric-nav="会员"><span class="metric-side-nav-dot"></span><span class="metric-side-nav-label">会员</span></button>
@@ -2862,7 +2862,7 @@
     <span id="metricMoreHint" style="font-size:12px;color:#5b6f90;">当前未选中0项</span>
     <button type="button" id="metricMoreClearSelected" style="margin-left:auto;height:24px;padding:0 8px;border:1px solid #d7e5fb;background:#fff;border-radius:4px;color:#43658f;font-size:12px;cursor:pointer;">清空已选</button>
   </div>
-  <input id="metricMoreSearch" class="pop-search" placeholder="请搜索选择指标" />
+  <input id="metricMoreSearch" class="pop-search" placeholder="请搜索并配置您关注的指标体系" />
   <div id="metricMoreList" class="pop-list"></div>
 </div>
 
@@ -16411,7 +16411,7 @@ let metricSearchKeyword = '';
 let dimensionMoreActiveGroup = '';
 let activeDimensionMoreSearchKey = '';
 const dimensionCategoryMap = {
-  '地域门店':['地区','城市','地级市','大陆城市线级','门店','门店属性','门店级别','营业状态'],
+  '区域门店':['地区','城市','地级市','大陆城市线级','门店','门店属性','门店级别','营业状态'],
   '时段日期':['星期','日期类型','用户时段','时段'],
   '账单消费':['就餐人数区间','账单实收金额区间','账单折扣区间','账单属性'],
   '排号订餐':['排号订餐业务场景','订餐渠道','排号渠道','订餐/排号市别','排号桌型','订餐桌型','候补状态'],
