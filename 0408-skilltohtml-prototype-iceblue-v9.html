@@ -1386,17 +1386,22 @@
 .float-pop .pop-list{max-height:280px;overflow:auto;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain}
 .float-pop .pop-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#334155}
 .float-pop .pop-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:12px;color:#5b6f90}
-#dimensionPopover{width:620px;max-height:430px;padding:0}
+#dimensionPopover{width:430px;max-height:430px;padding:0}
+#dimensionPopover.has-dimension-query{width:620px}
 #dimensionPopover .pop-head{padding:8px 12px;margin:0;border-bottom:1px solid #edf2fb}
-#dimensionPopover .dimension-search-cols{display:grid;grid-template-columns:minmax(250px,1fr) 160px}
+#dimensionPopover .dimension-search-cols{display:grid;grid-template-columns:1fr}
+#dimensionPopover.has-dimension-query .dimension-search-cols{grid-template-columns:minmax(250px,1fr) 160px}
 #dimensionPopover .dimension-search-col{padding:8px 0;max-height:352px;overflow:auto;overscroll-behavior:contain}
 #dimensionPopover .dimension-search-col:first-child{border-right:1px solid #edf2fb}
+#dimensionPopover:not(.has-dimension-query) .dimension-search-col:first-child{border-right:none}
+#dimensionPopover #dimensionValueList{display:none}
+#dimensionPopover.has-dimension-query #dimensionValueList{display:block}
 .dimension-search-item{padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;color:#334155;border-radius:6px;margin:0 8px}
 .dimension-search-item:hover{background:#f7fbff;color:#1f57bc}
 .dimension-search-item.active{background:#edf4ff;color:#1f57bc}
 .dimension-search-item input{width:16px;height:16px;margin:0;accent-color:#1677ff}
 .dimension-search-name{font-size:14px;font-weight:700;color:inherit;min-width:0;flex:1;word-break:break-all}
-.dimension-locate-link{flex:0 0 auto;color:#255db8;font-size:13px;white-space:nowrap;cursor:pointer}
+.dimension-locate-link{flex:0 0 auto;margin-left:auto;color:#255db8;font-size:13px;white-space:nowrap;cursor:pointer}
 .dimension-locate-link:hover{text-decoration:underline}
 .dimension-value-count{flex:0 0 auto;color:#94a3b8;font-size:12px}
 .dimension-search-arrow{flex:0 0 auto;color:#6b7a90;font-size:20px;line-height:1}
@@ -16627,6 +16632,10 @@ function getFilteredDimensionResults(){
 function renderDimensionValueList(activeResult){
   if(!dimensionValueList) return;
   const q = (dimSearchKeyword||'').trim();
+  if(!q){
+    dimensionValueList.innerHTML = '';
+    return;
+  }
   if(!activeResult){
     dimensionValueList.innerHTML = '<div class="dimension-value-empty">暂无匹配维值</div>';
     return;
@@ -16661,17 +16670,18 @@ function locateDimensionFromSearch(key=''){
 }
 function renderDimList(){
   const results = getFilteredDimensionResults();
-  if(!results.some(item=>item.def.key===activeDimensionSearchKey)) activeDimensionSearchKey = results[0]?.def.key || '';
-  const activeResult = results.find(item=>item.def.key===activeDimensionSearchKey) || null;
+  const hasQuery = !!(dimSearchKeyword||'').trim();
+  dimensionPopover?.classList.toggle('has-dimension-query', hasQuery);
+  if(!hasQuery) activeDimensionSearchKey = '';
+  else if(!results.some(item=>item.def.key===activeDimensionSearchKey)) activeDimensionSearchKey = results[0]?.def.key || '';
+  const activeResult = hasQuery ? (results.find(item=>item.def.key===activeDimensionSearchKey) || null) : null;
   dimensionList.innerHTML = results.map(item=>{
     const d = item.def;
-    const count = (dimSearchKeyword||'').trim() ? item.matchedValues.length : item.values.length;
-    return `<div class="dimension-search-item ${d.key===activeDimensionSearchKey?'active':''}" data-dim-key="${escapeHtml(d.key)}">
+    return `<div class="dimension-search-item ${hasQuery && d.key===activeDimensionSearchKey?'active':''}" data-dim-key="${escapeHtml(d.key)}">
       <input type="checkbox" data-name="${escapeHtml(d.key)}" ${pendingDims.has(d.key)?'checked':''}/>
       <span class="dimension-search-name">${escapeHtml(d.label)}</span>
       <span class="dimension-locate-link" data-locate-dim="${escapeHtml(d.key)}">快速定位</span>
-      <span class="dimension-value-count">${count || ''}</span>
-      <span class="dimension-search-arrow">›</span>
+      ${hasQuery ? '<span class="dimension-search-arrow">›</span>' : ''}
     </div>`;
   }).join('') || '<div class="dimension-value-empty">无匹配维度</div>';
   renderDimensionValueList(activeResult);
@@ -16679,6 +16689,14 @@ function renderDimList(){
     if(e.target.closest('input') || e.target.closest('[data-locate-dim]')) return;
     activeDimensionSearchKey = el.dataset.dimKey || '';
     renderDimList();
+  }));
+  dimensionList.querySelectorAll('.dimension-search-item').forEach(el=>el.addEventListener('mouseenter',()=>{
+    if(!hasQuery) return;
+    const key = el.dataset.dimKey || '';
+    if(key && key !== activeDimensionSearchKey){
+      activeDimensionSearchKey = key;
+      renderDimList();
+    }
   }));
   dimensionList.querySelectorAll('input[type="checkbox"]').forEach((el)=>el.addEventListener('change',(e)=>{ e.stopPropagation(); const name=el.dataset.name; if(el.checked) pendingDims.add(name); else pendingDims.delete(name); renderDimList(); }));
   dimensionList.querySelectorAll('[data-locate-dim]').forEach(el=>el.addEventListener('click',(e)=>{ e.stopPropagation(); activeDimensionSearchKey = el.dataset.locateDim || ''; locateDimensionFromSearch(activeDimensionSearchKey); }));
@@ -16733,7 +16751,7 @@ function placeDimensionSearchPopover(){
   const w = dimensionPopover.offsetWidth || 620;
   dimensionPopover.style.left = `${Math.max(12, Math.min(r.left, window.innerWidth - w - 12))}px`;
 }
-dimensionSearchInput?.addEventListener('focus',()=>{ pendingDims = new Set(selectedDims); dimSearchKeyword = (dimensionSearchInput.value||'').trim(); activeDimensionSearchKey = ''; placeDimensionSearchPopover(); renderDimList(); });
+dimensionSearchInput?.addEventListener('focus',()=>{ pendingDims = new Set(selectedDims); dimSearchKeyword = (dimensionSearchInput.value||'').trim(); activeDimensionSearchKey = ''; renderDimList(); placeDimensionSearchPopover(); });
 dimensionSearchInput?.addEventListener('input',()=>{ dimSearchKeyword = (dimensionSearchInput.value||'').trim(); activeDimensionSearchKey = ''; pendingDims = new Set(selectedDims); renderDimList(); if(dimensionPopover) dimensionPopover.style.display='block'; placeDimensionSearchPopover(); });
 
 const metricMap = {
@@ -17039,8 +17057,8 @@ dimensionSearchTrigger?.addEventListener('click',(e)=>{
   pendingDims = new Set(selectedDims);
   dimSearchKeyword = (dimensionSearchInput?.value||'').trim();
   activeDimensionSearchKey = '';
-  placeDimensionSearchPopover();
   renderDimList();
+  placeDimensionSearchPopover();
 });
 dimConfirmBtn?.addEventListener('click',()=>{ selectedDims = new Set(pendingDims); syncDimensionRows(); dimensionPopover.style.display='none'; });
 metricSearchTrigger?.addEventListener('click',(e)=>{e.stopPropagation(); hideAllPops(); syncMetricSelectionFromRows(); pendingMetricNames = new Set(selectedMetricNames); metricSearchKeyword=(metricSearchInput?.value||'').trim(); placePop(metricCascadePopover, metricSearchTrigger); renderMetricCascade();});
