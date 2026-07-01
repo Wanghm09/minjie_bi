@@ -857,18 +857,18 @@
 .dimension-side-nav,.metric-side-nav{grid-column:1;grid-row:2;align-self:stretch;position:relative;width:100%;z-index:10;margin-top:0;padding:4px 0 4px 10px;background:transparent;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
 .dimension-side-nav::before,.metric-side-nav::before{content:'';position:absolute;left:17px;top:13px;bottom:13px;width:2px;background:#c8ccd2;border-radius:2px}
 #metricPanel .metric-side-nav{transform:translateX(-33px);width:calc(100% + 33px);z-index:16}
-#metricPanel .metric-side-nav-item{grid-template-columns:18px max-content 7px;gap:2px;width:max-content;max-width:100%}
+#metricPanel .metric-side-nav-item{grid-template-columns:20px max-content 7px;gap:2px;width:max-content;max-width:100%}
 #metricPanel .metric-side-nav-label{width:auto;min-width:0;max-width:2.2em}
-#metricPanel .metric-side-nav-item .side-nav-eye{width:16px;height:16px}
-#metricPanel .metric-side-nav-item .side-nav-eye svg{width:14px;height:14px}
-    .dimension-side-nav-item,.metric-side-nav-item{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr) 10px;align-items:center;gap:4px;width:100%;min-height:38px;padding:0;border:none;background:transparent;color:#1D2129;font-size:13px;line-height:17px;text-align:left;cursor:pointer;letter-spacing:0;transition:color .18s ease}
+#metricPanel .metric-side-nav-item .side-nav-eye{width:20px;height:20px}
+#metricPanel .metric-side-nav-item .side-nav-eye svg{width:17px;height:17px}
+    .dimension-side-nav-item,.metric-side-nav-item{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) 10px;align-items:center;gap:4px;width:100%;min-height:38px;padding:0;border:none;background:transparent;color:#1D2129;font-size:13px;line-height:17px;text-align:left;cursor:pointer;letter-spacing:0;transition:color .18s ease}
 .dimension-side-nav-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:#b9bec5;box-shadow:0 0 0 2px #fff;transition:background .18s ease,transform .18s ease}
 .metric-side-nav-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:#b9bec5;box-shadow:0 0 0 2px #fff;transition:background .18s ease,transform .18s ease}
 .dimension-side-nav-label,.metric-side-nav-label{display:block;width:2.2em;white-space:normal;word-break:break-all;line-height:16px}
-.side-nav-eye{position:relative;z-index:2;width:18px;height:18px;border:1px solid transparent;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#1D2129;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,opacity .18s ease}
+.side-nav-eye{position:relative;z-index:2;width:20px;height:20px;border:1px solid transparent;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#1D2129;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,opacity .18s ease}
 .dimension-side-nav-item .side-nav-eye,.metric-side-nav-item .side-nav-eye{grid-column:1;grid-row:1;justify-self:center;align-self:center}
 .dimension-side-nav-item:has(.side-nav-eye) .dimension-side-nav-dot,.metric-side-nav-item:has(.side-nav-eye) .metric-side-nav-dot{display:none}
-.side-nav-eye svg{width:15px;height:15px;display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.side-nav-eye svg{width:17px;height:17px;display:block;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .side-nav-eye:hover{background:#eaf3ff;color:#0f66ff;border-color:#c7dcff}
 .side-nav-eye.is-hidden{color:#b1bdce;opacity:.82}
 .side-nav-eye svg .eye-slash{display:none}
@@ -1407,12 +1407,17 @@
 .dimension-search-arrow{flex:0 0 auto;color:#6b7a90;font-size:20px;line-height:1}
 .dimension-value-item{padding:7px 14px;color:#334155;font-size:14px;line-height:20px;word-break:break-all}
 .dimension-value-empty{padding:14px;color:#94a3b8;font-size:13px;line-height:20px}
-#dimensionMorePopover{width:430px;max-height:410px;padding:12px}
-#dimensionMorePopover .pop-head{padding:0 0 8px;justify-content:flex-start;gap:14px}
-#dimensionMorePopover .pop-search{height:38px;margin-bottom:10px;padding:0 12px;font-size:13px}
-#dimensionMorePopover .pop-list{max-height:300px;gap:10px}
-#dimensionMorePopover .pop-item{font-size:14px;line-height:22px}
-#dimensionMorePopover .pop-item input{width:16px;height:16px;margin:0;accent-color:#1677ff}
+#dimensionMorePopover{width:430px;max-height:430px;padding:0}
+#dimensionMorePopover.has-dimension-query{width:620px}
+#dimensionMorePopover .pop-head{padding:8px 12px;margin:0;border-bottom:1px solid #edf2fb;justify-content:flex-start;gap:14px}
+#dimensionMorePopover .pop-search{height:38px;margin:10px 12px;width:calc(100% - 24px);padding:0 12px;font-size:13px}
+#dimensionMorePopover .dimension-search-cols{display:grid;grid-template-columns:1fr;border-top:1px solid #edf2fb}
+#dimensionMorePopover.has-dimension-query .dimension-search-cols{grid-template-columns:minmax(250px,1fr) 160px}
+#dimensionMorePopover .dimension-search-col{padding:8px 0;max-height:276px;overflow:auto;overscroll-behavior:contain}
+#dimensionMorePopover .dimension-search-col:first-child{border-right:1px solid #edf2fb}
+#dimensionMorePopover:not(.has-dimension-query) .dimension-search-col:first-child{border-right:none}
+#dimensionMorePopover #dimensionMoreValueList{display:none}
+#dimensionMorePopover.has-dimension-query #dimensionMoreValueList{display:block}
 .dimension-more-clear{margin-left:auto;border:none;background:transparent;color:#0f66ff;font-size:13px;cursor:pointer;padding:0}
 .dimension-more-clear:hover{color:#0b55d9}
 .cascade-pop{width:520px;display:none;position:fixed;z-index:2200;background:#fff;border:1px solid #dfe7f6;border-radius:10px;box-shadow:0 10px 24px rgba(31,38,135,.16);overflow:hidden;overscroll-behavior:contain}
@@ -2843,8 +2848,11 @@
     <span id="dimensionMoreHint" style="font-size:13px;color:#5b6f90;">当前已选中0项</span>
     <button type="button" id="dimensionMoreClearSelected" class="dimension-more-clear">清空已选</button>
   </div>
-  <input id="dimensionMoreSearch" class="pop-search" placeholder="请输入维度名称" />
-  <div id="dimensionMoreList" class="pop-list"></div>
+  <input id="dimensionMoreSearch" class="pop-search" placeholder="请输入维度名称或维值" />
+  <div class="dimension-search-cols">
+    <div id="dimensionMoreList" class="dimension-search-col"></div>
+    <div id="dimensionMoreValueList" class="dimension-search-col"></div>
+  </div>
 </div>
 
 <div id="metricMorePopover" class="float-pop">
@@ -15928,6 +15936,7 @@ const dimensionShowAllBtn = document.getElementById('dimensionShowAllBtn');
 const dimensionMorePopover = document.getElementById('dimensionMorePopover');
 const dimensionMoreSearch = document.getElementById('dimensionMoreSearch');
 const dimensionMoreList = document.getElementById('dimensionMoreList');
+const dimensionMoreValueList = document.getElementById('dimensionMoreValueList');
 const dimensionMoreHint = document.getElementById('dimensionMoreHint');
 const dimensionMoreSelectAll = document.getElementById('dimensionMoreSelectAll');
 const dimensionMoreClearSelected = document.getElementById('dimensionMoreClearSelected');
@@ -16377,6 +16386,7 @@ let dimSearchKeyword = '';
 let activeDimensionSearchKey = '';
 let metricSearchKeyword = '';
 let dimensionMoreActiveGroup = '';
+let activeDimensionMoreSearchKey = '';
 const dimensionCategoryMap = {
   '地域门店':['地区','城市','地级市','大陆城市线级','门店','门店属性','门店级别','营业状态'],
   '时段日期':['星期','日期类型','用户时段','时段'],
@@ -16467,6 +16477,7 @@ function syncDimensionMoreRows(){
       e.stopPropagation();
       hideAllPops();
       dimensionMoreActiveGroup = name;
+      activeDimensionMoreSearchKey = '';
       if(dimensionMoreSearch) dimensionMoreSearch.value = '';
       placePop(dimensionMorePopover, moreBtn);
       renderDimensionMore();
@@ -16478,17 +16489,49 @@ function syncDimensionMoreRows(){
 function getDimensionLabelByKey(key=''){
   return dimensionDefs.find(d=>d.key===key)?.label || key;
 }
-function getCurrentDimensionMoreKeys(){
+function getCurrentDimensionMoreResults(){
   const q = (dimensionMoreSearch?.value||'').trim();
   const keys = dimensionCategoryMap[dimensionMoreActiveGroup] || [];
-  return keys.filter(key=>{
-    const label = getDimensionLabelByKey(key);
-    return !q || key.includes(q) || label.includes(q);
-  });
+  return keys
+    .map(key=>dimensionDefs.find(d=>d.key===key) || {key,label:getDimensionLabelByKey(key)})
+    .map(def=>getDimensionSearchResult(def,q))
+    .filter(item=>!q || item.nameMatched || item.valueMatched);
+}
+function getCurrentDimensionMoreKeys(){
+  return getCurrentDimensionMoreResults().map(item=>item.def.key);
+}
+function renderDimensionMoreValueList(activeResult){
+  if(!dimensionMoreValueList) return;
+  const q = (dimensionMoreSearch?.value||'').trim();
+  if(!q){
+    dimensionMoreValueList.innerHTML = '';
+    return;
+  }
+  if(!activeResult){
+    dimensionMoreValueList.innerHTML = '<div class="dimension-value-empty">暂无匹配维值</div>';
+    return;
+  }
+  const values = activeResult.matchedValues.length ? activeResult.matchedValues : [];
+  dimensionMoreValueList.innerHTML = values.length
+    ? values.slice(0,80).map(v=>`<div class="dimension-value-item">${escapeHtml(v)}</div>`).join('')
+    : '<div class="dimension-value-empty">该维度暂无匹配维值</div>';
+}
+function clampDimensionMorePopover(){
+  if(!dimensionMorePopover || dimensionMorePopover.style.display === 'none') return;
+  const w = dimensionMorePopover.offsetWidth || 430;
+  const currentLeft = parseFloat(dimensionMorePopover.style.left || '12') || 12;
+  dimensionMorePopover.style.left = `${Math.max(12, Math.min(currentLeft, window.innerWidth - w - 12))}px`;
 }
 function renderDimensionMore(){
-  const keys = getCurrentDimensionMoreKeys();
+  const results = getCurrentDimensionMoreResults();
+  const keys = results.map(item=>item.def.key);
   const allGroupKeys = dimensionCategoryMap[dimensionMoreActiveGroup] || [];
+  const hasQuery = !!(dimensionMoreSearch?.value||'').trim();
+  dimensionMorePopover?.classList.toggle('has-dimension-query', hasQuery);
+  clampDimensionMorePopover();
+  if(!hasQuery) activeDimensionMoreSearchKey = '';
+  else if(!results.some(item=>item.def.key===activeDimensionMoreSearchKey)) activeDimensionMoreSearchKey = results[0]?.def.key || '';
+  const activeResult = hasQuery ? (results.find(item=>item.def.key===activeDimensionMoreSearchKey) || null) : null;
   const checkedCount = allGroupKeys.filter(key=>selectedDims.has(key)).length;
   if(dimensionMoreHint) dimensionMoreHint.textContent = `当前已选中${checkedCount}项`;
   if(dimensionMoreSelectAll){
@@ -16498,7 +16541,29 @@ function renderDimensionMore(){
     dimensionMoreSelectAll.disabled = keys.length===0;
   }
   if(!dimensionMoreList) return;
-  dimensionMoreList.innerHTML = keys.map(key=>`<label class="pop-item"><input type="checkbox" data-key="${key}" ${selectedDims.has(key)?'checked':''}/> ${getDimensionLabelByKey(key)}</label>`).join('') || '<div class="pop-item" style="color:#94a3b8;">无匹配维度</div>';
+  dimensionMoreList.innerHTML = results.map(item=>{
+    const d = item.def;
+    return `<div class="dimension-search-item ${hasQuery && d.key===activeDimensionMoreSearchKey?'active':''}" data-dim-more-key="${escapeHtml(d.key)}">
+      <input type="checkbox" data-key="${escapeHtml(d.key)}" ${selectedDims.has(d.key)?'checked':''}/>
+      <span class="dimension-search-name">${escapeHtml(d.label)}</span>
+      <span class="dimension-locate-link" data-locate-dim-more="${escapeHtml(d.key)}">快速定位</span>
+      ${hasQuery ? '<span class="dimension-search-arrow">›</span>' : ''}
+    </div>`;
+  }).join('') || '<div class="dimension-value-empty">无匹配维度</div>';
+  renderDimensionMoreValueList(activeResult);
+  dimensionMoreList.querySelectorAll('.dimension-search-item').forEach(el=>el.addEventListener('click',(e)=>{
+    if(e.target.closest('input') || e.target.closest('[data-locate-dim-more]')) return;
+    activeDimensionMoreSearchKey = el.dataset.dimMoreKey || '';
+    renderDimensionMore();
+  }));
+  dimensionMoreList.querySelectorAll('.dimension-search-item').forEach(el=>el.addEventListener('mouseenter',()=>{
+    if(!hasQuery) return;
+    const key = el.dataset.dimMoreKey || '';
+    if(key && key !== activeDimensionMoreSearchKey){
+      activeDimensionMoreSearchKey = key;
+      renderDimensionMore();
+    }
+  }));
   dimensionMoreList.querySelectorAll('input[type="checkbox"]').forEach(el=>el.addEventListener('change',()=>{
     const key = el.dataset.key;
     if(el.checked) selectedDims.add(key);
@@ -16506,6 +16571,12 @@ function renderDimensionMore(){
     pendingDims = new Set(selectedDims);
     syncDimensionRows();
     if(typeof renderDimList === 'function') renderDimList();
+    renderDimensionMore();
+  }));
+  dimensionMoreList.querySelectorAll('[data-locate-dim-more]').forEach(el=>el.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    activeDimensionMoreSearchKey = el.dataset.locateDimMore || '';
+    locateDimensionFromSearch(activeDimensionMoreSearchKey);
     renderDimensionMore();
   }));
 }
@@ -16713,7 +16784,7 @@ dimSelectAll?.addEventListener('change',()=>{
   else filteredDims.forEach(d=>pendingDims.delete(d.key));
   renderDimList();
 });
-dimensionMoreSearch?.addEventListener('input',renderDimensionMore);
+dimensionMoreSearch?.addEventListener('input',()=>{ activeDimensionMoreSearchKey = ''; renderDimensionMore(); });
 dimensionMoreSelectAll?.addEventListener('change',()=>{
   const keys = getCurrentDimensionMoreKeys();
   if(dimensionMoreSelectAll.checked) keys.forEach(key=>selectedDims.add(key));
